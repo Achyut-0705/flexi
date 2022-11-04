@@ -45,6 +45,7 @@ export const adminLogin = async (req, res, next) => {
 
 export const companyLogin = async (req, res, next) => {
   logger.info("On company login route");
+  console.log(req.body);
 
   const errors = validationResult(req);
   if (!errors.isEmpty())
