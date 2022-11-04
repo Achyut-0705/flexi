@@ -59,6 +59,9 @@ export const companyLogin = async (req, res, next) => {
     const company = await Company.findOne({ where: { email: email } });
 
     if (company) {
+      if (company.status !== "accepted") {
+        res.status(200).json({ status: company.status });
+      }
       const passwordMatch = await bcrypt.compare(password, company.password);
 
       if (passwordMatch) {
@@ -66,7 +69,8 @@ export const companyLogin = async (req, res, next) => {
           { email: company.email, company_id: company.id, is_admin: false },
           process.env.JWT_SECRET
         );
-        res.status(200).json({ token, is_admin: false });
+        delete company.dataValues.password;
+        res.status(200).json({ token, is_admin: false, company });
       } else {
         next(createError(403, "Invalid Credentials"));
       }
