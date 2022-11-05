@@ -6,7 +6,10 @@ import isAuthorized from "../utils/isAuthorized.js";
 import {
   getAllCompanies,
   getAllCompaniesByStatus,
+  getAllCompaniesSimilarToName,
   getCompanyById,
+  getCompanyByToken,
+  getCompanyProductsByToken,
   patchCompany,
   patchCompanyStatus,
   postCompany,
@@ -15,6 +18,21 @@ import {
 const router = Router();
 
 router.get("/", getAllCompanies);
+
+router.get(
+  "/search/:name",
+  [
+    param("name")
+      .not()
+      .isEmpty()
+      .withMessage("Query param name must be provided"),
+  ],
+  getAllCompaniesSimilarToName
+);
+
+router.get("/token/company", isAuthorized, getCompanyByToken);
+
+router.get("/token/products", isAuthorized, getCompanyProductsByToken);
 
 router.get(
   "/status/:status",

@@ -20,6 +20,34 @@ export const getAllProducts = async (req, res, next) => {
   }
 };
 
+export const getAllProductsSimilarToName = async (req, res, next) => {
+  logger.info("On get all products search route");
+  
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    // return res.status(400).json({ error: errors.array()[0].msg });
+    next(createError(400, errors.array()[0].msg));
+    return;
+  }
+
+  const { name } = req.params;
+
+  try {
+    const products = await Product.findAll({
+      where: {
+        name: {
+          [Op.like]: `%${name}%`
+        }
+      }
+    });
+    res.status(200).json({ products });
+  } catch (error) {
+    // res.status(400).json({ error });
+    next(createError(400, error.message));
+    return;
+  }
+};
+
 export const getProudctById = async (req, res, next) => {
   logger.info("On get product by id route");
 

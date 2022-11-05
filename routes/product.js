@@ -4,6 +4,7 @@ import { check, param, body, query } from "express-validator";
 import {
   deleteProduct,
   getAllProducts,
+  getAllProductsSimilarToName,
   getProductByCompanyId,
   getProudctById,
   patchProduct,
@@ -27,6 +28,17 @@ router.get(
       .toInt(),
   ],
   getProudctById
+);
+
+router.get(
+  "/search/:name",
+  [
+    param("name")
+      .not()
+      .isEmpty()
+      .withMessage("Query param name must be provided"),
+  ],
+  getAllProductsSimilarToName
 );
 
 router.get(
