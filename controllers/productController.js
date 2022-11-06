@@ -89,6 +89,7 @@ export const getProductByCompanyId = async (req, res, next) => {
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    console.log(errors.array());
     // return res.status(400).json({ error: errors.array()[0].msg });
     next(createError(400, errors.array()[0].msg));
     return;
@@ -98,16 +99,19 @@ export const getProductByCompanyId = async (req, res, next) => {
   const { limit, page } = req.query;
 
   try {
-    const company = await Company.findOne({
+    const condition = {
       where: { id: company_id },
       include: [
         {
           model: Product,
-          limit: limit,
-          offset: limit * (page - 1),
+          as: "products",
+          attributes: { exclude: "password" },
+          limit: limit && limit,
+          offset: page && (page - 1) * limit,
         },
       ],
-    });
+    };
+    const company = await Company.findOne(condition);
     if (company) {
       // delete company.dataValues.password;
       res.status(200).json({ products: company.products });

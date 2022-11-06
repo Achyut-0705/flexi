@@ -50,18 +50,18 @@ router.get(
       .isInt()
       .withMessage("Query param company_id incorrect")
       .toInt(),
-    query("limit")
-      .not()
-      .isEmpty()
-      .isInt({ min: 0 })
-      .withMessage("Query string limit incorrect")
-      .toInt(),
-    query("page")
-      .not()
-      .isEmpty()
-      .isInt({ min: 1 })
-      .withMessage("Query string page incorrect")
-      .toInt(),
+    // query("limit")
+    //   .not()
+    //   .isEmpty()
+    //   .isInt({ min: 0 })
+    //   .withMessage("Query string limit incorrect")
+    //   .toInt(),
+    // query("page")
+    //   .not()
+    //   .isEmpty()
+    //   .isInt({ min: 1 })
+    //   .withMessage("Query string page incorrect")
+    //   .toInt(),
   ],
   getProductByCompanyId
 );
