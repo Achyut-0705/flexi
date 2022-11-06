@@ -63,7 +63,7 @@ export const getCompanyByToken = async (req, res, next) => {
 
   try {
     const company = await Company.findOne({
-      where: { id: req, company_id },
+      where: { id: req.company_id },
       attributes: { exclude: ["password"] },
     });
     res.status(200).json({ company });
