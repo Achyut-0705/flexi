@@ -60,22 +60,26 @@ export const companyLogin = async (req, res, next) => {
     const company = await Company.findOne({ where: { email: email } });
 
     if (company) {
-      if (company.status !== "accepted") {
-        res.status(200).json({ status: company.status });
-      }
-      const passwordMatch = await bcrypt.compare(password, company.password);
-
-      if (passwordMatch) {
-        const token = jwt.sign(
-          { email: company.email, company_id: company.id, is_admin: false },
-          process.env.JWT_SECRET
-        );
-        delete company.dataValues.password;
-        res.status(200).json({ token, is_admin: false, company });
+      if (company.status === "accepted") {
+        // res.status(200).json({ status: company.status });
+        const passwordMatch = await bcrypt.compare(password, company.password);
+        if (passwordMatch) {
+          const token = jwt.sign(
+            { email: company.email, company_id: company.id, is_admin: false },
+            process.env.JWT_SECRET
+          );
+          delete company.dataValues.password;
+          res.status(200).json({ token, is_admin: false, company });
+        } else {
+          next(createError(403, "Invalid Credentials"));
+        }
       } else {
-        next(createError(403, "Invalid Credentials"));
+        next(createError(401, "Company details under review"));
+        return;
       }
-    } else next(createError(403, "Invalid Credentials"));
+    } else {
+      next(createError(404, "Company does not exists"));
+    }
   } catch (error) {
     logger.error(error);
     next(createError(500, "Internal Server Error"));
