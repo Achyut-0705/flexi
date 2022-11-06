@@ -22,7 +22,7 @@ export const getAllProducts = async (req, res, next) => {
 
 export const getAllProductsSimilarToName = async (req, res, next) => {
   logger.info("On get all products search route");
-  
+
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     // return res.status(400).json({ error: errors.array()[0].msg });
@@ -36,9 +36,9 @@ export const getAllProductsSimilarToName = async (req, res, next) => {
     const products = await Product.findAll({
       where: {
         name: {
-          [Op.like]: `%${name}%`
-        }
-      }
+          [Op.like]: `%${name}%`,
+        },
+      },
     });
     res.status(200).json({ products });
   } catch (error) {

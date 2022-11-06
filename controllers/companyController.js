@@ -25,7 +25,7 @@ export const getAllCompanies = async (req, res, next) => {
 
 export const getAllCompaniesSimilarToName = async (req, res, next) => {
   logger.info("On get all companies search route");
-  
+
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     // return res.status(400).json({ error: errors.array()[0].msg });
@@ -39,9 +39,9 @@ export const getAllCompaniesSimilarToName = async (req, res, next) => {
     const companies = await Company.findAll({
       where: {
         name: {
-          [Op.like]: `%${name}%`
-        }
-      }
+          [Op.like]: `%${name}%`,
+        },
+      },
     });
     res.status(200).json({ companies });
   } catch (error) {
@@ -84,8 +84,9 @@ export const getCompanyProductsByToken = async (req, res, next) => {
 
   try {
     const company = await Company.findOne({
-      where: { id: company_id },
-      include: [{
+      where: { id: req.company_id },
+      include: [
+        {
           model: Product,
         },
       ],
