@@ -4,6 +4,7 @@ import { check, param, body, query } from "express-validator";
 import {
   deleteProduct,
   getAllProducts,
+  getAllProductsSimilarToName,
   getProductByCompanyId,
   getProudctById,
   patchProduct,
@@ -27,6 +28,17 @@ router.get(
       .toInt(),
   ],
   getProudctById
+);
+
+router.get(
+  "/search/:name",
+  [
+    param("name")
+      .not()
+      .isEmpty()
+      .withMessage("Query param name must be provided"),
+  ],
+  getAllProductsSimilarToName
 );
 
 router.get(
@@ -71,6 +83,12 @@ router.post(
       .isInt({ min: 0 })
       .withMessage("Price must be an non empty positive integer")
       .toInt()
+      .trim()
+      .escape(),
+    body("description")
+      .not()
+      .isEmpty()
+      .withMessage("Description must not be empty")
       .trim()
       .escape(),
     check("file")

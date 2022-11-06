@@ -20,6 +20,34 @@ export const getAllProducts = async (req, res, next) => {
   }
 };
 
+export const getAllProductsSimilarToName = async (req, res, next) => {
+  logger.info("On get all products search route");
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    // return res.status(400).json({ error: errors.array()[0].msg });
+    next(createError(400, errors.array()[0].msg));
+    return;
+  }
+
+  const { name } = req.params;
+
+  try {
+    const products = await Product.findAll({
+      where: {
+        name: {
+          [Op.like]: `%${name}%`,
+        },
+      },
+    });
+    res.status(200).json({ products });
+  } catch (error) {
+    // res.status(400).json({ error });
+    next(createError(400, error.message));
+    return;
+  }
+};
+
 export const getProudctById = async (req, res, next) => {
   logger.info("On get product by id route");
 
@@ -117,7 +145,7 @@ export const postProduct = async (req, res, next) => {
   }
 
   const company_id = req.company_id;
-  const { name, price } = req.body;
+  const { name, price, description } = req.body;
   const image = req.file;
 
   try {
@@ -128,6 +156,7 @@ export const postProduct = async (req, res, next) => {
       const product = await Product.create({
         name,
         price,
+        description,
         company_id,
         imageURL,
         imageID,
@@ -172,7 +201,7 @@ export const patchProduct = async (req, res, next) => {
   }
 
   const { id } = req.params;
-  const { name, price } = req.body;
+  const { name, price, description } = req.body;
   const image = req.file;
 
   try {
@@ -192,6 +221,7 @@ export const patchProduct = async (req, res, next) => {
 
     if (name) product.name = name;
     if (price) product.price = price;
+    if (description) product.description = description;
 
     if (image) {
       const { url: imageURL, id: imageID } = await cloudinaryHandler.updateFile(

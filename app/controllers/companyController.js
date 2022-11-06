@@ -6,6 +6,7 @@ import logger from "../utils/logger.js";
 import deleteFromFs from "../utils/deleteFromFs.js";
 import Company from "../models/company.js";
 import cloudinaryHandler from "../utils/cloudinaryHandler.js";
+import { Op } from "sequelize";
 
 export const getAllCompanies = async (req, res, next) => {
   logger.info("On get all companies route");
@@ -15,6 +16,82 @@ export const getAllCompanies = async (req, res, next) => {
       attributes: { exclude: ["password"] },
     });
     res.status(200).json({ companies });
+  } catch (error) {
+    // res.status(400).json({ error });
+    next(createError(400, error.message));
+    return;
+  }
+};
+
+export const getAllCompaniesSimilarToName = async (req, res, next) => {
+  logger.info("On get all companies search route");
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    // return res.status(400).json({ error: errors.array()[0].msg });
+    next(createError(400, errors.array()[0].msg));
+    return;
+  }
+
+  const { name } = req.params;
+
+  try {
+    const companies = await Company.findAll({
+      where: {
+        name: {
+          [Op.like]: `%${name}%`,
+        },
+      },
+    });
+    res.status(200).json({ companies });
+  } catch (error) {
+    // res.status(400).json({ error });
+    next(createError(400, error.message));
+    return;
+  }
+};
+
+export const getCompanyByToken = async (req, res, next) => {
+  logger.info("On get company by token route");
+
+  if (!req.company_id) {
+    // return res.status(401).json({ error: "Unauthorized to use this route" });
+    next(createError(401, "Unauthorized to use this route"));
+    return;
+  }
+
+  try {
+    const company = await Company.findOne({
+      where: { id: req, company_id },
+      attributes: { exclude: ["password"] },
+    });
+    res.status(200).json({ company });
+  } catch (error) {
+    // res.status(400).json({ error });
+    next(createError(400, error.message));
+    return;
+  }
+};
+
+export const getCompanyProductsByToken = async (req, res, next) => {
+  logger.info("On get company by token route");
+
+  if (!req.company_id) {
+    // return res.status(401).json({ error: "Unauthorized to use this route" });
+    next(createError(401, "Unauthorized to use this route"));
+    return;
+  }
+
+  try {
+    const company = await Company.findOne({
+      where: { id: req.company_id },
+      include: [
+        {
+          model: Product,
+        },
+      ],
+    });
+    res.status(200).json({ company });
   } catch (error) {
     // res.status(400).json({ error });
     next(createError(400, error.message));
