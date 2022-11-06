@@ -25,6 +25,9 @@
   "scripts": {
     "start": "node index.js",
     "devStart": "nodemon index.js | bunyan",
+    "seed": "node utils/dataUtils/seed.js",
+    "nuke:soft": "node utils/dataUtils/softNuke.js",
+    "nuke:hard": "node utils/dataUtils/hardNuke.js",
     "cleanUploads": "rm ./upload/*"
   }
 }
