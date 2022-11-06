@@ -3,6 +3,7 @@ import { validationResult } from "express-validator";
 import createError from "http-errors";
 
 import logger from "../utils/logger.js";
+import Product from "../models/products.js";
 import deleteFromFs from "../utils/deleteFromFs.js";
 import Company from "../models/company.js";
 import cloudinaryHandler from "../utils/cloudinaryHandler.js";
